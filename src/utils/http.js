@@ -1,7 +1,7 @@
 // http functions to fetch data from the server
 // import localstorage to get the API key
 import axios from 'axios';
-const API_BASE_URL = 'http://localhost:8000';
+import { API_HOST } from './host';
 export const fetchStock = async () => {
   try {
     // get apikey from local storage
@@ -11,7 +11,7 @@ export const fetchStock = async () => {
     }
     // set the API key in the headers
     axios.defaults.headers.common['Authorization'] = `ApiKey ${apiKey}`;
-    const response = await axios.get(`${API_BASE_URL}/stock`);  
+    const response = await axios.get(`${API_HOST}/stock`);  
     return response.data;   
   } catch (error) {
     console.error('Error fetching products:', error);
