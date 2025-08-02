@@ -27,13 +27,49 @@
             <button class="btn btn-primary ml-2" @click="addRecord">添加</button>
         </div>
     </div>
-    <div class="row my-3">
+    <div class="row my-3" v-if="errorMsg.length > 0">
         <div class="col">
-            <div class="alert alert-danger" role="alert" v-if="errorMsg.length > 0">
+            <div class="alert alert-danger" role="alert">
                 {{ errorMsg }}
             </div>
         </div>
     </div>
+    <!-- Cash or Credit Card selection -->
+     <div class="row text-start my-3">
+        <div class="col-3"></div>
+        <div class="col-3">
+            <div class="form-check">
+                <input 
+                    class="form-check-input" 
+                    type="radio" 
+                    name="paymentMethod" 
+                    id="cashRadio" 
+                    v-model="isCash" 
+                    value="cash"
+                >
+                <label class="form-check-label" for="cashRadio">
+                    现结
+                </label>
+                </div>
+        </div>
+        <div class="col-3">
+            <div class="form-check">
+            <input            
+                class="form-check-input" 
+                type="radio" 
+                name="paymentMethod" 
+                id="creditCardRadio" 
+                v-model="isCash" 
+                value="credit"
+            >
+            <label class="form-check-label" for="creditCardRadio">
+                月结
+            </label>
+            </div>    
+        </div>
+     </div>
+    
+    
     <div class="row text-center my-3" v-if="addedItems.length > 0">
         <div class="col">总数: {{ totalCount }}</div>
         <div class="col">总成本: {{ totalCost }}</div>
@@ -78,8 +114,8 @@ export default {
     return {
       filterText: '', // Text input for filtering
       selectedItem: 1, // Currently selected item in the dropdown
-      items: [
-      ],
+      items: [],
+      isCash:"cash",
       errorMsg:"",
       addedItems: [] // Array to store added items,
 
@@ -128,7 +164,7 @@ export default {
       let description = this.addedItems.map(item => {
         return `${item.goods}|${item.display_name}|${item.batch_num}|${item.saled_quantity}|${this.getSalesPrice(item).toFixed(2)}`;
       }).join('\n');
-      description += `\n总数: ${this.totalCount} | 总成本: ${this.totalCost} | 总售价: ${this.totalSales}`;
+      description += `\n${(this.isCash === "cash") ? "现结" : "月结"} | 总数: ${this.totalCount} | 总成本: ${this.totalCost} | 总售价: ${this.totalSales}`;
       navigator.clipboard.writeText(description).then(() => {
         alert('出货描述已复制到剪贴板');
       }).catch(err => {
