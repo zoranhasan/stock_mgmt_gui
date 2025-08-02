@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <!-- Filter input -->
-    <div class="input-group">
+    <div class="input-group my-3">
       <span class="input-group-text">过滤</span>
       <input 
         type="text" 
@@ -13,7 +13,7 @@
     </div>
 
     <!-- Filtered results dropdown -->
-    <div class="input-group">
+    <div class="input-group my-3">
       <div class="d-flex">
         <select class="form-control" id="resultDropdown" v-model="selectedItem">
           <option v-for="item in filteredItems" :key="item.id" :value="item.id">
@@ -22,24 +22,24 @@
         </select>
       </div>
     </div>
-    <div class="row text-start">
-        <div class="col-2">
+    <div class="row text-start my-3">
+        <div class="col">
             <button class="btn btn-primary ml-2" @click="addRecord">添加</button>
         </div>
     </div>
-    <div class="row">
+    <div class="row my-3">
         <div class="col">
             <div class="alert alert-danger" role="alert" v-if="errorMsg.length > 0">
                 {{ errorMsg }}
             </div>
         </div>
     </div>
-    <div class="row text-start" v-if="addedItems.length > 0">
+    <div class="row text-center my-3" v-if="addedItems.length > 0">
         <div class="col">总数: {{ totalCount }}</div>
         <div class="col">总成本: {{ totalCost }}</div>
         <div class="col">总售价: {{ totalSales }}</div>
     </div>
-    <div class="container mt-3">
+    <div class="container my-3">
         <div v-for="ele in addedItems" :key="ele.id" class="card mb-3 p-3">
             <div class="row text-start mb-2">
                 <div class="col-8">{{ ele.display_name }}</div>
@@ -126,8 +126,9 @@ export default {
     },
     copyDescription() {
       let description = this.addedItems.map(item => {
-        return `${item.display_name}|${item.batch_num}|${item.saled_quantity}|${this.getSalesPrice(item).toFixed(2)}`;
+        return `${item.goods}|${item.display_name}|${item.batch_num}|${item.saled_quantity}|${this.getSalesPrice(item).toFixed(2)}`;
       }).join('\n');
+      description += `\n总数: ${this.totalCount} | 总成本: ${this.totalCost} | 总售价: ${this.totalSales}`;
       navigator.clipboard.writeText(description).then(() => {
         alert('出货描述已复制到剪贴板');
       }).catch(err => {
