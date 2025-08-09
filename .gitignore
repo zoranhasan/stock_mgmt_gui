@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
 /dist
+*.tar.gz
+src/utils/host.js
 
 
 # local env files
