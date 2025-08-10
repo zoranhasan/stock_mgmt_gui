@@ -1,8 +1,9 @@
 <template>
   <nav>
     <router-link to="/">首页</router-link> |
-    <router-link to="/sales">出货</router-link>
+    <router-link to="/sales">出货</router-link> 
   </nav>
+  <div>{{ version }}</div> 
   <router-view/>
 </template>
 
@@ -28,3 +29,13 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 </style>
+
+<script>
+export default {
+  data() {
+    return {
+      version: "v1.0.0"
+    };
+  },
+}
+</script>
