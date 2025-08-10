@@ -103,13 +103,13 @@
         </div>
         <div class="row" v-if="addedItems.length > 0">
             <div class="col">
-                <button class="btn btn-primary" @click="createSales">
-                    扣减库存
-                </button>
-            </div>
-            <div class="col">
                 <button class="btn btn-primary" @click="copyDescription">
                     只复制出货描述
+                </button>
+            </div>
+            <div class="col" v-if="descriptionCopied">
+                <button class="btn btn-primary" @click="createSales">
+                    扣减库存
                 </button>
             </div>
         </div>
@@ -132,8 +132,8 @@ export default {
       items: [],
       isCash:"cash",
       errorMsg:"",
-      addedItems: [] // Array to store added items,
-
+      addedItems: [], // Array to store added items,
+      descriptionCopied: false
     };
   },
   computed: {
@@ -185,6 +185,7 @@ export default {
     copyDescription() {      
       navigator.clipboard.writeText(this.salesDescription).then(() => {
         alert('出货描述已复制到剪贴板');
+        this.descriptionCopied = true;
       }).catch(err => {
         console.error('Failed to copy: ', err);
       });
@@ -218,6 +219,8 @@ export default {
             alert('库存已成功扣减');
             this.addedItems = []; // Clear added items after successful sale
             this.errorMsg = ""; // Clear error message
+            this.refreshStockList();
+            this.descriptionCopied = false;
           })
           .catch(error => {
             console.error('Error creating sales:', error);
