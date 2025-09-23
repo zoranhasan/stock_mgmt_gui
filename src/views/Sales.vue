@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container py-3" style="background-color:chartreuse;">
     <!-- Filter input -->
     <div class="input-group my-3">
       <span class="input-group-text">过滤</span>
@@ -81,7 +81,7 @@
         <div class="col">总成本: {{ totalCost }}</div>
         <div class="col">总售价: {{ totalSales }}</div>
     </div>
-    <div class="container my-3">
+    <div class="container px-0 my-3">
         <div v-for="ele in addedItems" :key="ele.id" class="card mb-3 p-3">
             <div class="row text-start mb-2">
                 <div class="col">{{ ele.display_name }}</div>
