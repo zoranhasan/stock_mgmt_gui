@@ -35,7 +35,7 @@ nav a.router-link-exact-active {
 export default {
   data() {
     return {
-      version: "v1.1.0"
+      version: "v1.2.0"
     };
   },
 }

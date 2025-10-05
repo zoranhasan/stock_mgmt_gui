@@ -147,16 +147,18 @@ export default {
         }        
         return ele.batch_num;
     },
+    getSelectedItem(){
+        return this.items.find(item => item.id === this.selectedItem);
+    },
     addRecord() {
-        console.log(this.addedItems);
-        const targetItem = this.items[this.selectedItem - 1];
+        const targetItem = this.getSelectedItem();
         for(let i = 0; i < this.addedItems.length; i++) {
             if (this.addedItems[i].id === targetItem.id) {
                 this.errorMsg = "已添加过该产品";
                 return;
             }
         }
-        this.addedItems.push(targetItem);      
+        this.addedItems.push(targetItem);  
     },
     removeRecord(id) {
       this.addedItems = this.addedItems.filter(item => item.id !== id);
@@ -251,6 +253,7 @@ export default {
         // result: { allGoods, latestPrices }
         // You can merge or use as needed. Here, just set items to allGoods
         this.items = result;
+        console.log(result);
       }).catch(error => {
         console.error('Error fetching goods data:', error);
       });
