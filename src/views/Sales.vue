@@ -160,7 +160,7 @@ export default {
       let description = this.addedItems.map(item => {
         return `${item.goods}|${item.display_name}|${item.batch_num}|${item.saled_quantity}|${item.sales_price.toFixed(2)}`;
       }).join('\n');
-      description += `\n${(this.isCash === "cash") ? "现结" : "月结"} | 总数: ${this.totalCount} | 总成本: ${this.totalCost} | 总售价: ${this.totalSales}`;
+      description += `\n${(this.isCash === "cash") ? "现结" : "月结"} | 总数: ${this.totalCount} | 总成本: ${this.totalCost} | 总售价: ${this.totalSales} | 日期: ${this.salesDate}`;
       return description;
     }
   },
