@@ -22,15 +22,24 @@
         </select>
       </div>
     </div>
-    <div class="row text-start my-3">
-      <div class="col-6">
+    <div class="row text-start my-3 g-2 align-items-center">
+      <div class="col-md-4">
           <input 
             type="date" 
             class="form-control" 
             v-model="salesDate" 
             placeholder="选择出货日期"
-          /></div>
-        <div class="col">
+          />
+      </div>
+      <div class="col-md-5">
+        <select class="form-control" v-model="selectedClientId">
+          <option :value="null" disabled>选择客户</option>
+          <option v-for="client in clients" :key="client.id" :value="client.id">
+            {{ client.name }}
+          </option>
+        </select>
+      </div>
+        <div class="col-md-3">
             <button class="btn btn-primary ml-2" @click="addRecord">添加</button>
         </div>
     </div>
@@ -118,7 +127,7 @@
 </template>
 
 <script>
-import { apiFetchStock, apiCreateSales } from '@/utils/http';
+import { apiFetchStock, apiCreateSales, apiFetchClients } from '@/utils/http';
 export default {
   name: 'SalesView',
   components: {
@@ -129,7 +138,9 @@ export default {
       salesDate: new Date().toISOString().split('T')[0], // Default to today's date
       filterText: '', // Text input for filtering
       selectedItem: 1, // Currently selected item in the dropdown
+      selectedClientId: null,
       items: [],
+      clients: [],
       isCash:"cash",
       errorMsg:"",
       addedItems: [], // Array to store added items,
@@ -156,24 +167,35 @@ export default {
     totalSales() {
         return this.addedItems.reduce((sum, item) => sum + (item.saled_quantity * item.sales_price), 0).toFixed(2);
     },
+    selectedClientName() {
+      const targetClient = this.clients.find(client => client.id === this.selectedClientId);
+      return targetClient ? targetClient.name : '未选择客户';
+    },
     salesDescription() {
       let description = this.addedItems.map(item => {
         return `${item.goods}|${item.display_name}|${item.batch_num}|${item.saled_quantity}|${item.sales_price.toFixed(2)}`;
       }).join('\n');
-      description += `\n${(this.isCash === "cash") ? "现结" : "月结"} | 总数: ${this.totalCount} | 总成本: ${this.totalCost} | 总售价: ${this.totalSales} | 日期: ${this.salesDate}`;
+      description += `\n客户: ${this.selectedClientName} | ${(this.isCash === "cash") ? "现结" : "月结"} | 总数: ${this.totalCount} | 总成本: ${this.totalCost} | 总售价: ${this.totalSales} | 日期: ${this.salesDate}`;
       return description;
     }
   },
   methods: {
+    getSelectedItem() {
+      return this.items.find(item => item.id === this.selectedItem);
+    },
     addRecord() {
-        console.log(this.addedItems);
-        const targetItem = this.items[this.selectedItem - 1];
+        const targetItem = this.getSelectedItem();
+        if (!targetItem) {
+            this.errorMsg = "请选择出货产品";
+            return;
+        }
         for(let i = 0; i < this.addedItems.length; i++) {
             if (this.addedItems[i].id === targetItem.id) {
                 this.errorMsg = "已添加过该产品";
                 return;
             }
         }
+        this.errorMsg = "";
         this.addedItems.push(targetItem);      
     },
     removeRecord(id) {
@@ -196,6 +218,11 @@ export default {
         return;
       }
 
+      if (this.selectedClientId === null) {
+        this.errorMsg = "请选择客户";
+        return;
+      }
+
       for(let item of this.addedItems) {
         if (item.saled_quantity > item.available_quantity) {
           this.errorMsg = `出货数量超过库存: ${item.display_name}`;
@@ -206,6 +233,7 @@ export default {
       if(confirm(`确认扣减库存吗？请详细核对以下出货信息\n${this.salesDescription}}`)) {
         this.salesData = {
           "sales_date": this.salesDate,
+          "client_id": this.selectedClientId,
           "remarks": "From Web Portal",
           "details": this.addedItems.map(item => ({
             goods: item.goods,
@@ -230,6 +258,17 @@ export default {
         this.errorMsg = "操作已取消"; 
       }
     },
+    refreshClients() {
+      apiFetchClients().then(response => {
+        this.clients = response.data;
+        if (this.clients.length > 0 && this.selectedClientId === null) {
+          this.selectedClientId = this.clients[0].id;
+        }
+      }).catch(error => {
+        console.error('Error fetching client data:', error);
+        this.errorMsg = "客户列表加载失败，请稍后再试";
+      });
+    },
     refreshStockList(){
       apiFetchStock().then(response => {
         this.items = response.data.map(item => {
@@ -243,6 +282,7 @@ export default {
     }
   },
   mounted() {
+    this.refreshClients();
     this.refreshStockList();
   }
 }
