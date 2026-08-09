@@ -180,6 +180,17 @@ export default {
     }
   },
   methods: {
+    handleWindowFocus() {
+      this.refreshSalesDate();
+    },
+    handleVisibilityChange() {
+      if (document.visibilityState === 'visible') {
+        this.refreshSalesDate();
+      }
+    },
+    refreshSalesDate() {
+      this.salesDate = new Date().toISOString().split('T')[0];
+    },
     getSelectedItem() {
       return this.items.find(item => item.id === this.selectedItem);
     },
@@ -282,8 +293,20 @@ export default {
     }
   },
   mounted() {
+    window.addEventListener('focus', this.handleWindowFocus);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    this.refreshSalesDate();
     this.refreshClients();
     this.refreshStockList();
+  },
+  activated() {
+    this.refreshSalesDate();
+    this.refreshClients();
+    this.refreshStockList();
+  },
+  beforeUnmount() {
+    window.removeEventListener('focus', this.handleWindowFocus);
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
   }
 }
 </script>
