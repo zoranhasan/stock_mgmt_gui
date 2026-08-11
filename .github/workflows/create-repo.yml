@@ -1,0 +1,47 @@
+name: Create upload_server Repository
+
+# Requires a repository secret named GH_PAT containing a personal access token
+# with the 'repo' scope in order to create a new repository under the account.
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_name:
+        description: Name of the private repository to create
+        required: false
+        default: upload_server
+
+jobs:
+  create-repo:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Create private repository upload_server
+        id: create_repo
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if RESPONSE=$(gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /user/repos \
+            -f name='${{ inputs.repo_name }}' \
+            -f private=true 2>&1); then
+            REPO_URL=$(echo "$RESPONSE" | jq -r '.html_url')
+            if [ "$REPO_URL" = "null" ] || [ -z "$REPO_URL" ]; then
+              echo "Error: unexpected API response - html_url not found."
+              echo "$RESPONSE"
+              exit 1
+            fi
+            echo "repo_url=$REPO_URL" >> "$GITHUB_OUTPUT"
+            echo "Repository created: $REPO_URL"
+          else
+            echo "Error: GitHub API call failed."
+            echo "$RESPONSE"
+            exit 1
+          fi
+
+      - name: Output repository URL
+        run: |
+          echo "The new private repository is available at: ${{ steps.create_repo.outputs.repo_url }}"
