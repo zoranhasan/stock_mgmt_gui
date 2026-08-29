@@ -68,6 +68,21 @@ export const apiFetchAllGoods = async () => {
   }
 }
 
+export const apiCreateGoods = async (goodsData) => {
+  try {
+    const apiKey = localStorage.getItem('ApiKey');
+    if (!apiKey) {
+      throw new Error('API key not found in local storage');
+    }
+    axios.defaults.headers.common['Authorization'] = `ApiKey ${apiKey}`;
+    const response = await axios.post(`${API_HOST}/goods`, goodsData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating goods:', error);
+    throw error;
+  }
+}
+
 export const apiCreatePurchase = async (purchaseData) => {
   try {
     // get apikey from local storage

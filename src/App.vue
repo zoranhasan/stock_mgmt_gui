@@ -2,7 +2,8 @@
   <nav>
     <router-link to="/">首页</router-link> |
     <router-link to="/sales">出货</router-link> |
-    <router-link to="/purchase">进货</router-link> 
+    <router-link to="/purchase">进货</router-link> |
+    <router-link to="/goods">商品</router-link>
   </nav>
   <div>{{ version }}</div> 
   <router-view/>
@@ -35,7 +36,7 @@ nav a.router-link-exact-active {
 export default {
   data() {
     return {
-      version: "v1.3.0"
+      version: "v1.4.0"
     };
   },
 }
